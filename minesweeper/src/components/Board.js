@@ -7,6 +7,7 @@ export default class Board extends Component {
         boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
         gameStatus: "Game in progress",
         mineCount: this.props.mines,
+        firstMoveMade: false,
     };
 
     getMines(data) {
@@ -190,8 +191,14 @@ export default class Board extends Component {
         if (this.state.boardData[x][y].isRevealed || this.state.boardData[x][y].isFlagged) return null;
 
         if (this.state.boardData[x][y].isMine) {
-            this.setState({gameStatus: "You Lost."});
-            this.revealBoard();
+            if (this.state.firstMoveMade) {
+                this.setState({gameStatus: "You Lost."});
+                this.revealBoard();
+            } else {
+                while (this.state.boardData[x][y].isMine) {
+                    this.state.boardData = this.initBoardData();
+                }
+            }
         }
 
         let updatedData = this.state.boardData;
@@ -284,5 +291,6 @@ export default class Board extends Component {
 Board.propTypes = {
     height: PropTypes.number,
     width: PropTypes.number,
-    mines: PropTypes.number
+    mines: PropTypes.number,
+    firstMoveMade: PropTypes.bool
 }
