@@ -8,6 +8,7 @@ export default class Board extends Component {
         gameStatus: "Game in progress",
         mineCount: this.props.mines,
         firstMoveMade: false,
+        gameFinished: false
     };
 
     getMines(data) {
@@ -192,14 +193,17 @@ export default class Board extends Component {
 
         if (this.state.boardData[x][y].isMine) {
             if (this.state.firstMoveMade) {
-                this.setState({gameStatus: "You Lost."});
+                this.setState({gameStatus: "You Lost.", gameFinished: true});
                 this.revealBoard();
+
             } else {
                 while (this.state.boardData[x][y].isMine) {
                     this.state.boardData = this.initBoardData();
                 }
             }
         }
+
+        this.state.firstMoveMade = true;
 
         let updatedData = this.state.boardData;
         updatedData[x][y].isFlagged = false;
@@ -210,7 +214,7 @@ export default class Board extends Component {
           }
 
         if (this.getHidden(updatedData).length === this.props.mines) {
-            this.setState({gameStatus: "You Win"});
+            this.setState({gameStatus: "You Win", gameFinished: true});
             this.revealBoard();
         }
 
@@ -239,7 +243,7 @@ export default class Board extends Component {
             const flagArray = this.getFlags(updatedData);
 
             if (JSON.stringify(mineArray) === JSON.stringify(flagArray)) {
-                this.setState({ mineCount: 0, gameStatus: "You Win." });
+                this.setState({ mineCount: 0, gameStatus: "You Win.", gameFinished: true});
                 this.revealBoard();
             }
         }
@@ -270,7 +274,7 @@ export default class Board extends Component {
 
     render() {
         return(
-            <div className="board">
+            <div className="screen">
                 <div className="game-info">
                     <span className="info">
                         mines: {this.state.mineCount}
@@ -280,9 +284,17 @@ export default class Board extends Component {
                         {this.state.gameStatus}
                     </h1>
                 </div>
-                {
-                    this.renderBoard(this.state.boardData)
-                }
+                <div className="settings">
+                    <h3>Game Settings</h3>
+                </div>
+                <div className="board">
+                    { this.renderBoard(this.state.boardData) }
+                </div>
+                { this.state.gameFinished ? 
+                    <div className="replay">
+                        <h2>Play Again?</h2>
+                    </div> 
+                    : null }
             </div>
         );
     }
