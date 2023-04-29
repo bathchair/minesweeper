@@ -11,6 +11,16 @@ export default class Board extends Component {
         gameFinished: false
     };
 
+    refreshState() {
+        this.setState({
+            boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+            gameStatus: "Game in progress",
+            mineCount: this.props.mines,
+            firstMoveMade: false,
+            gameFinished: false
+        })
+    }
+
     getMines(data) {
         let mineArray = [];
 
@@ -195,7 +205,6 @@ export default class Board extends Component {
             if (this.state.firstMoveMade) {
                 this.setState({gameStatus: "You Lost.", gameFinished: true});
                 this.revealBoard();
-
             } else {
                 while (this.state.boardData[x][y].isMine) {
                     this.state.boardData = this.initBoardData();
@@ -291,7 +300,7 @@ export default class Board extends Component {
                     { this.renderBoard(this.state.boardData) }
                 </div>
                 { this.state.gameFinished ? 
-                    <div className="replay">
+                    <div className="replay" onClick={() => this.refreshState()}>
                         <h2>Play Again?</h2>
                     </div> 
                     : null }
